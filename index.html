@@ -14,7 +14,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 
-  <!-- Custom Styles -->
   <style>
     body {
       background-color: #f0f9ff;
@@ -63,7 +62,7 @@
       <!-- Subject -->
       <div>
         <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-        <select id="subject" name="subject" required
+        <select id="subject" required
           class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
           <option value="" disabled selected>Select subject</option>
           <option value="math">Mathematics</option>
@@ -77,16 +76,24 @@
       <!-- Description -->
       <div>
         <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-        <textarea id="description" name="description" rows="4" required
+        <textarea id="description" rows="4" required
           class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"></textarea>
+      </div>
+
+      <!-- Assigned Date -->
+      <div>
+        <label for="assignedDate" class="block text-sm font-medium text-gray-700 mb-1">Assigned Date</label>
+        <input type="text" id="assignedDate" required
+          class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          placeholder="Select assigned date">
       </div>
 
       <!-- Due Date -->
       <div>
         <label for="dueDate" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-        <input type="text" id="dueDate" name="dueDate" required
+        <input type="text" id="dueDate" required
           class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-          placeholder="Select date">
+          placeholder="Select due date">
       </div>
 
       <!-- Preview Button -->
@@ -104,6 +111,11 @@
         <div class="preview-item pl-3 py-1">
           <div class="preview-label">Subject</div>
           <div id="preview-subject" class="preview-value"></div>
+        </div>
+
+        <div class="preview-item pl-3 py-1">
+          <div class="preview-label">Assigned Date</div>
+          <div id="preview-assignedDate" class="preview-value"></div>
         </div>
 
         <div class="preview-item pl-3 py-1">
@@ -139,6 +151,12 @@
         disableMobile: true
       });
 
+      flatpickr("#assignedDate", {
+        dateFormat: "m/d/Y",
+        maxDate: "today",
+        disableMobile: true
+      });
+
       const inputForm = document.getElementById('inputForm');
       const previewForm = document.getElementById('previewForm');
       const previewBtn = document.getElementById('previewBtn');
@@ -157,8 +175,9 @@
         const subject = document.getElementById('subject').value;
         const description = document.getElementById('description').value;
         const dueDate = document.getElementById('dueDate').value;
+        const assignedDate = document.getElementById('assignedDate').value;
 
-        if (!subject || !description || !dueDate) {
+        if (!subject || !description || !dueDate || !assignedDate) {
           Swal.fire({
             title: 'Incomplete Information',
             text: 'Please fill in all fields',
@@ -170,8 +189,9 @@
         }
 
         document.getElementById('preview-subject').textContent = subjectNames[subject] || subject;
-        document.getElementById('preview-dueDate').textContent = dueDate;
         document.getElementById('preview-description').textContent = description;
+        document.getElementById('preview-dueDate').textContent = dueDate;
+        document.getElementById('preview-assignedDate').textContent = assignedDate;
 
         inputForm.classList.add('hidden');
         previewForm.classList.remove('hidden');
@@ -186,17 +206,16 @@
         const subject = document.getElementById('subject').value;
         const description = document.getElementById('description').value;
         const dueDate = document.getElementById('dueDate').value;
+        const assignedDate = document.getElementById('assignedDate').value;
 
         Swal.fire({
           title: 'Saving Assignment',
           text: 'Please wait...',
           allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          }
+          didOpen: () => Swal.showLoading()
         });
 
-        const data = { subject, description, dueDate };
+        const data = { subject, description, dueDate, assignedDate };
         const callbackName = 'jsonpCallback_' + new Date().getTime();
 
         window[callbackName] = function (response) {
@@ -213,6 +232,7 @@
               document.getElementById('subject').value = '';
               document.getElementById('description').value = '';
               document.getElementById('dueDate').value = '';
+              document.getElementById('assignedDate').value = '';
               previewForm.classList.add('hidden');
               inputForm.classList.remove('hidden');
             });
@@ -231,9 +251,8 @@
         };
 
         const script = document.createElement('script');
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwqrDWaBPST4zWPtcRpoFHSfq4YOYj34igLsWhs-tlPL3__uLhcUo6QAZoWyaIzuinogQ/exec'; // Replace with your actual URL
-        script.src = `${scriptUrl}?callback=${callbackName}&subject=${encodeURIComponent(data.subject)}&description=${encodeURIComponent(data.description)}&dueDate=${encodeURIComponent(data.dueDate)}`;
-
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbwqrDWaBPST4zWPtcRpoFHSfq4YOYj34igLsWhs-tlPL3__uLhcUo6QAZoWyaIzuinogQ/exec'; // เปลี่ยน URL นี้ตามของคุณ
+        script.src = `${scriptUrl}?callback=${callbackName}&subject=${encodeURIComponent(subject)}&description=${encodeURIComponent(description)}&dueDate=${encodeURIComponent(dueDate)}&assignedDate=${encodeURIComponent(assignedDate)}`;
         script.onerror = function () {
           Swal.fire({
             title: 'Connection Error',
