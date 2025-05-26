@@ -146,16 +146,17 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       flatpickr("#dueDate", {
-        dateFormat: "m/d/Y",
-        minDate: "today",
-        disableMobile: true
-      });
+  dateFormat: "d F Y", // เช่น 26 May 2025
+  minDate: "today",
+  disableMobile: true
+});
 
-      flatpickr("#assignedDate", {
-        dateFormat: "m/d/Y",
-        maxDate: "today",
-        disableMobile: true
-      });
+flatpickr("#assignedDate", {
+  dateFormat: "d F Y", // เช่น 26 May 2025
+  maxDate: "today",
+  disableMobile: true
+});
+
 
       const inputForm = document.getElementById('inputForm');
       const previewForm = document.getElementById('previewForm');
